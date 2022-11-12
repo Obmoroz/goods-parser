@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/mux"
 	"goods-parser/file_system"
 	"net/http"
-	"regexp"
 )
 
 type Handler struct {
@@ -23,9 +22,11 @@ func (h *Handler) InitRoutes() *mux.Router {
 			return
 		}
 		writer.Write(read0)
-
+		/*//инпоинт юри принципы SOLID 1 принцып*/
 	}).Methods("GET")
 	TokenSubRouter.HandleFunc("/search", func(writer http.ResponseWriter, request *http.Request) {
+		t := *request
+		fmt.Println(t)
 		err := request.ParseForm()
 		if err != nil {
 			fmt.Println("error " + err.Error())
@@ -40,11 +41,24 @@ func (h *Handler) InitRoutes() *mux.Router {
 			writer.Write([]byte("String must be less then 50 symbols"))
 			return
 		}
-		matched, _ := regexp.MatchString(`^a.b$`, "aaxbb")
 		fmt.Println(s2)
 		writer.Write([]byte("hellow search"))
 	}).Methods("POST")
 
 	return router
 
+}
+
+type resoult struct {
+	Resource  Resource
+	ItemPrice int
+}
+
+type Resource struct {
+	Name string
+	Url  string
+}
+
+type ResourceForSearch struct {
+	Resource
 }

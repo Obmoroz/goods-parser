@@ -3,7 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"goods-parser/file_system"
 	"goods-parser/handler"
+
+	"gopkg.in/yaml.v3"
+	"log"
 	"net/http"
 	"time"
 )
@@ -13,7 +17,38 @@ type App struct {
 	Router     *mux.Router
 }
 
+type Config struct {
+	SiteList []Site `yaml:"SiteList"`
+}
+
+type SiteList struct {
+	Site []Site `yaml:"Site"`
+}
+
+type Site struct {
+	Url      string `yaml:"Url"`
+	DataPath string `yaml:"DataPath"`
+}
+
 func main() {
+	/*
+		поставить пакет yaml 3 +
+		прочитать файл yaml  +
+		сделать unmarshl в слайс структуру +
+		результат переменная со срезом, содержащим настройки сайтов/ресурсов для поискать +
+	*/
+	readlist, err := file_system.Read0("C:\\Users\\User\\go\\bin\\goods-parser\\conf.yaml")
+	if err != nil {
+		fmt.Println("error " + err.Error())
+		return
+	}
+
+	l := Config{}
+	err = yaml.Unmarshal([]byte(readlist), &l)
+	if err != nil {
+		log.Fatalf("cannot unmarshal data: %v", err)
+	}
+	fmt.Printf("%v", l)
 	app := NewApp()
 	if err := app.Run(); err != nil {
 		fmt.Println(err)
